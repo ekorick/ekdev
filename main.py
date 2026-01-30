@@ -11,12 +11,11 @@ import webbrowser
 from tkinter import filedialog, messagebox
 
 # --- YAPILANDIRMA ---
-GITHUB_VERSION_URL = "https://raw.githubusercontent.com/ekorick/ekdev/refs/heads/main/versiom.txt"
-GITHUB_KEY_URL = "https://raw.githubusercontent.com/ekorick/ekdev/refs/heads/main/key.txt"
-CURRENT_VERSION = "1.4" # İSTEĞİN ÜZERİNE GÜNCELLENDİ
-APP_NAME = "EK DEV SEC_OPS"
-LICENSE_FILE = "license.key"
-UPDATE_LINK = "https://ekdev.vercel.app/" # YENİ GÜNCELLEME SİTESİ
+GITHUB_VERSION_URL = "https://ekdev.vercel.app/version.txt"
+# Key URL kaldırıldı (Artık Ücretsiz)
+CURRENT_VERSION = "3.0" 
+APP_NAME = "EK DEV SEC_OPS (OPEN SOURCE)"
+UPDATE_LINK = "https://ekdev.vercel.app/"
 
 # --- TASARIM AYARLARI (ULTRA MINIMAL) ---
 COLOR_BG = "#020202"         # Derin Siyah
@@ -37,9 +36,9 @@ ctk.set_default_color_theme("green")
 LANG = {
     "EN": {
         "dash": "DASHBOARD", "live": "ACTIVE DEFENSE", "ghost": "GHOST PROTOCOL",
-        "net": "NET SENTRY", "link": "DEEP TRACE", "tool": "TOOLBOX", "lic": "LICENSE",
+        "net": "NET SENTRY", "link": "DEEP TRACE", "tool": "TOOLBOX", "sys": "SYSTEM MON", # Yeni Özellik
         "sys_status": "SYSTEM: ONLINE", "host": "HOST", "os": "OS", "ip": "LOCAL IP",
-        "license": "LICENSE", "free": "FREE TIER", "pro": "ELITE TIER",
+        "edition": "EDITION", "open": "OPEN SOURCE", # Lisans yerine Edition
         "start_prot": "ENGAGE", "stop_prot": "DISENGAGE", "traffic": "TRAFFIC LOG",
         "banned": "BLACKLIST", "remove": "UNBAN", "scan_start": "INITIALIZE SCAN",
         "analyzing": "[*] Analyzing...", 
@@ -49,18 +48,18 @@ LANG = {
         "refresh": "REFRESH", "target_link": "Enter target URL...",
         "deep_scan": "TRACE ROUTE", "wifi": "WIFI", "hash": "HASH",
         "shred": "SHREDDER", "dns": "DNS", "port": "PORTS", "ping": "PING",
-        "verify": "ACTIVATE", "access_granted": "AUTHORIZED", "access_denied": "UNAUTHORIZED",
-        "checking": "Verifying...", "update": "PATCH SYSTEM", "outdated": "UPDATE REQUIRED",
+        "update": "PATCH SYSTEM", "outdated": "UPDATE REQUIRED",
         "attack_detected": "\n[!] THREAT: {ip} -> BLOCKED.\n",
         "clean": "[OK] Target appears clean.", "sus": "[?] SUSPICIOUS: Redirect loop.",
         "danger": "[!!!] DANGER: MALICIOUS NODE DETECTED!",
-        "unbanned": "[i] {ip} unblocked.\n"
+        "unbanned": "[i] {ip} unblocked.\n",
+        "cpu": "CPU LOAD", "ram": "RAM USAGE", "disk": "DISK SPACE", "swap": "SWAP MEM"
     },
     "TR": {
         "dash": "KONTROL PANELİ", "live": "AKTİF KORUMA", "ghost": "GİZLİLİK",
-        "net": "AĞ İZLEME", "link": "LİNK ANALİZ", "tool": "ARAÇLAR", "lic": "LİSANS",
+        "net": "AĞ İZLEME", "link": "LİNK ANALİZ", "tool": "ARAÇLAR", "sys": "SİSTEM İZLEME", # Yeni Özellik
         "sys_status": "SİSTEM: AKTİF", "host": "CİHAZ", "os": "SİSTEM", "ip": "YEREL IP",
-        "license": "ÜYELİK", "free": "STANDART", "pro": "ELITE ÜYE",
+        "edition": "SÜRÜM", "open": "AÇIK KAYNAK", # Lisans yerine Sürüm
         "start_prot": "BAŞLAT", "stop_prot": "DURDUR", "traffic": "TRAFİK AKIŞI",
         "banned": "ENGEL LİSTESİ", "remove": "KALDIR", "scan_start": "TARAMA BAŞLAT",
         "analyzing": "[*] Analiz ediliyor...", 
@@ -70,12 +69,12 @@ LANG = {
         "refresh": "YENİLE", "target_link": "Hedef linki girin...",
         "deep_scan": "DERİN TARAMA", "wifi": "WIFI", "hash": "HASH",
         "shred": "YOK ET", "dns": "DNS", "port": "PORTLAR", "ping": "PING",
-        "verify": "DOĞRULA", "access_granted": "YETKİLENDİRİLDİ", "access_denied": "BAŞARISIZ",
-        "checking": "Kontrol ediliyor...", "update": "GÜNCELLE", "outdated": "GÜNCELLEME GEREKLİ",
+        "update": "GÜNCELLE", "outdated": "GÜNCELLEME GEREKLİ",
         "attack_detected": "\n[!] TEHDİT: {ip} -> ENGELLENDİ.\n",
         "clean": "[OK] Hedef temiz görünüyor.", "sus": "[?] ŞÜPHELİ: Çoklu yönlendirme.",
         "danger": "[!!!] TEHLİKE: IP LOGGER ZİNCİRİ TESPİT EDİLDİ!",
-        "unbanned": "[i] {ip} engeli kaldırıldı.\n"
+        "unbanned": "[i] {ip} engeli kaldırıldı.\n",
+        "cpu": "İŞLEMCİ", "ram": "BELLEK", "disk": "DİSK ALANI", "swap": "TAKAS ALANI"
     }
 }
 
@@ -89,28 +88,14 @@ class EkDevApp(ctk.CTk):
         self.resizable(False, False)
         self.eval('tk::PlaceWindow . center')
         
-        self.is_pro = False
-        self.load_license()
+        # ARTIK HERKES PRO (AÇIK KAYNAK)
+        self.is_pro = True 
 
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
         self.init_ui()
         self.check_version()
-
-    def load_license(self):
-        if os.path.exists(LICENSE_FILE):
-            try:
-                with open(LICENSE_FILE, "r") as f:
-                    key = f.read().strip()
-                    if key: self.is_pro = True
-            except: pass
-
-    def save_license(self, key):
-        try:
-            with open(LICENSE_FILE, "w") as f:
-                f.write(key)
-        except: pass
 
     def init_ui(self):
         for widget in self.winfo_children(): widget.destroy()
@@ -122,7 +107,7 @@ class EkDevApp(ctk.CTk):
         self.sidebar.grid(row=0, column=0, sticky="nsew")
         
         ctk.CTkLabel(self.sidebar, text=" EK DEV ", font=("Impact", 20), text_color=COLOR_ACCENT).pack(pady=(20, 2))
-        ctk.CTkLabel(self.sidebar, text="SEC_OPS", font=("Consolas", 9), text_color="#555").pack(pady=(0, 20))
+        ctk.CTkLabel(self.sidebar, text="OPEN SOURCE", font=("Consolas", 9), text_color="#555").pack(pady=(0, 20))
         
         ctk.CTkButton(self.sidebar, text=f"[{CURRENT_LANG}]", width=50, height=20, 
                       fg_color="transparent", hover_color="#222", border_width=1, border_color="#222",
@@ -135,7 +120,7 @@ class EkDevApp(ctk.CTk):
         self.menu_btn(t["net"], self.show_net)
         self.menu_btn(t["link"], self.show_link)
         self.menu_btn(t["tool"], self.show_toolbox)
-        self.menu_btn(t["lic"], self.show_license)
+        self.menu_btn(t["sys"], self.show_sysmon) # YENİ BUTON
         
         ctk.CTkLabel(self.sidebar, text=f"v{CURRENT_VERSION}", text_color="#333", font=("Arial", 8)).pack(side="bottom", pady=5)
 
@@ -151,7 +136,8 @@ class EkDevApp(ctk.CTk):
 
     def create_frames(self):
         self.frames = {}
-        for F in (Dashboard, GhostCheck, NetSentry, LinkScanner, DdosGuard, Toolbox, LicensePage, UpdateLock):
+        # LicensePage KALDIRILDI -> SystemMonitor EKLENDİ
+        for F in (Dashboard, GhostCheck, NetSentry, LinkScanner, DdosGuard, Toolbox, SystemMonitor, UpdateLock):
             frame = F(parent=self, controller=self)
             self.frames[F.__name__] = frame
             frame.grid(row=0, column=1, sticky="nsew")
@@ -163,10 +149,8 @@ class EkDevApp(ctk.CTk):
     def show_net(self): self.show_frame("NetSentry")
     def show_link(self): self.show_frame("LinkScanner")
     def show_toolbox(self): self.show_frame("Toolbox")
-    def show_license(self): self.show_frame("LicensePage")
-    def show_ddos(self): 
-        if self.is_pro: self.show_frame("DdosGuard")
-        else: messagebox.showwarning("LOCKED", "PRO ACCESS REQUIRED")
+    def show_sysmon(self): self.show_frame("SystemMonitor") # YENİ SAYFA
+    def show_ddos(self): self.show_frame("DdosGuard") # ARTIK HERKESE AÇIK
 
     def check_version(self):
         def _c():
@@ -202,18 +186,74 @@ class Dashboard(ctk.CTkFrame):
         self.card(grid, t["os"], platform.system()).grid(row=0, column=1, padx=5, pady=5)
         self.card(grid, t["ip"], socket.gethostbyname(socket.gethostname())).grid(row=1, column=0, padx=5, pady=5)
         
-        lic_stat = t["pro"] if self.controller.is_pro else t["free"]
-        lic_color = COLOR_ACCENT if self.controller.is_pro else "#555"
-        self.card(grid, t["license"], lic_stat, val_color=lic_color).grid(row=1, column=1, padx=5, pady=5)
-
-    def refresh_status(self):
-        self.setup_ui()
+        # Lisans Kartı -> Sürüm Kartına Dönüştü
+        self.card(grid, t["edition"], t["open"], val_color=COLOR_ACCENT).grid(row=1, column=1, padx=5, pady=5)
 
     def card(self, p, title, val, val_color="white"):
         f = ctk.CTkFrame(p, fg_color="#080808", border_color="#1a1a1a", border_width=1, width=200, height=80, corner_radius=0)
         ctk.CTkLabel(f, text=title, font=("Consolas", 9), text_color="gray").place(x=10, y=10)
         ctk.CTkLabel(f, text=val, font=("Consolas", 12, "bold"), text_color=val_color).place(x=10, y=35)
         return f
+
+# --- YENİ ÖZELLİK: SİSTEM İZLEYİCİ (LİSANS YERİNE GELDİ) ---
+class SystemMonitor(ctk.CTkFrame):
+    def __init__(self, parent, controller):
+        super().__init__(parent, fg_color=COLOR_BG)
+        self.setup_ui()
+        self.update_stats()
+
+    def setup_ui(self):
+        for widget in self.winfo_children(): widget.destroy()
+        t = LANG[CURRENT_LANG]
+        
+        ctk.CTkLabel(self, text=":: " + t["sys"], font=FONT_HEAD, text_color="white").pack(pady=40)
+        
+        self.bars = {}
+        
+        # Progress barları oluştur
+        self.create_monitor(t["cpu"], "cpu")
+        self.create_monitor(t["ram"], "ram")
+        self.create_monitor(t["disk"], "disk")
+        self.create_monitor(t["swap"], "swap")
+
+    def create_monitor(self, title, key):
+        frame = ctk.CTkFrame(self, fg_color="transparent")
+        frame.pack(fill="x", padx=100, pady=10)
+        
+        lbl_frame = ctk.CTkFrame(frame, fg_color="transparent")
+        lbl_frame.pack(fill="x")
+        ctk.CTkLabel(lbl_frame, text=title, font=("Consolas", 11), text_color="gray").pack(side="left")
+        self.bars[f"{key}_lbl"] = ctk.CTkLabel(lbl_frame, text="0%", font=("Consolas", 11), text_color=COLOR_ACCENT)
+        self.bars[f"{key}_lbl"].pack(side="right")
+        
+        self.bars[key] = ctk.CTkProgressBar(frame, height=10, corner_radius=0, progress_color=COLOR_ACCENT, fg_color="#111")
+        self.bars[key].pack(fill="x", pady=5)
+        self.bars[key].set(0)
+
+    def update_stats(self):
+        try:
+            # CPU
+            cpu = psutil.cpu_percent()
+            self.bars["cpu"].set(cpu / 100)
+            self.bars["cpu_lbl"].configure(text=f"%{cpu}")
+            
+            # RAM
+            ram = psutil.virtual_memory().percent
+            self.bars["ram"].set(ram / 100)
+            self.bars["ram_lbl"].configure(text=f"%{ram}")
+            
+            # DISK
+            disk = psutil.disk_usage('/').percent
+            self.bars["disk"].set(disk / 100)
+            self.bars["disk_lbl"].configure(text=f"%{disk}")
+            
+            # SWAP
+            swap = psutil.swap_memory().percent
+            self.bars["swap"].set(swap / 100)
+            self.bars["swap_lbl"].configure(text=f"%{swap}")
+            
+        except: pass
+        self.after(2000, self.update_stats) # 2 saniyede bir güncelle
 
 class DdosGuard(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -459,13 +499,10 @@ class Toolbox(ctk.CTkFrame):
             os.remove(path)
             self.log("Deleted.")
     def dns_check(self): self.log(f"DNS: {socket.gethostbyname(socket.gethostname())}")
-    
-    # --- PORT SCAN FIX: Artık 9999 portunu (DDoS Honeypot) da tarıyor ---
     def port_scan(self):
         self.log("Scanning Ports (Localhost)...")
         def _s():
             o = []
-            # Tarama listesine 9999 eklendi
             for p in [21,22,53,80,443,3000,3306,8080,9999]:
                 s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.settimeout(0.5)
@@ -473,38 +510,7 @@ class Toolbox(ctk.CTkFrame):
                 s.close()
             self.log(f"Open Ports: {o}" if o else "No critical ports open.")
         threading.Thread(target=_s).start()
-        
     def ping_test(self): threading.Thread(target=lambda: self.log(os.popen(f"ping {'-n' if os.name=='nt' else '-c'} 1 8.8.8.8").read())).start()
-
-class LicensePage(ctk.CTkFrame):
-    def __init__(self, parent, controller):
-        super().__init__(parent, fg_color=COLOR_BG)
-        self.controller = controller
-        t = LANG[CURRENT_LANG]
-        ctk.CTkLabel(self, text=":: " + t["lic"], font=FONT_HEAD, text_color="white").pack(pady=40)
-        self.entry = ctk.CTkEntry(self, placeholder_text="XXXX-XXXX-XXXX", width=300, justify="center", fg_color="#111", border_color="#333", corner_radius=0)
-        self.entry.pack(pady=10)
-        ctk.CTkButton(self, text=t["verify"], command=self.check, width=200, fg_color=COLOR_ACCENT, text_color="black", corner_radius=0).pack(pady=10)
-        self.lbl = ctk.CTkLabel(self, text="")
-        self.lbl.pack()
-    def check(self):
-        t = LANG[CURRENT_LANG]
-        k = self.entry.get().strip()
-        self.lbl.configure(text=t["checking"], text_color="yellow")
-        def _v():
-            try:
-                url = f"{GITHUB_KEY_URL}?t={time.time()}"
-                r = requests.get(url, timeout=5)
-                valid = [x.strip() for x in r.text.splitlines() if x.strip()]
-                if k in valid:
-                    self.controller.is_pro = True
-                    self.controller.save_license(k)
-                    self.lbl.configure(text=t["access_granted"], text_color=COLOR_SUCCESS)
-                    self.controller.frames["Dashboard"].refresh_status()
-                else:
-                    self.lbl.configure(text=t["access_denied"], text_color=COLOR_DANGER)
-            except Exception as e: self.lbl.configure(text=f"Err: {e}")
-        threading.Thread(target=_v).start()
 
 class UpdateLock(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -513,7 +519,6 @@ class UpdateLock(ctk.CTkFrame):
         ctk.CTkLabel(self, text=t["outdated"], font=("Impact", 40), text_color="red").pack(pady=100)
         self.lbl = ctk.CTkLabel(self, text="", text_color="white")
         self.lbl.pack()
-        # GÜNCELLEME LİNKİ GÜNCELLENDİ
         ctk.CTkButton(self, text=t["update"], command=lambda: webbrowser.open(UPDATE_LINK), fg_color="red", corner_radius=0).pack(pady=20)
     def set_ver(self, v): self.lbl.configure(text=f"New Patch: {v}")
 

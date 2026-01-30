@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EK DEV SEC_OPS v2.2 | Elite Cybersecurity Operations</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+        darkMode: "class",
+        theme: {
+            extend: {
+                colors: {
+                    "primary": "#00ff41",
+                    "background-light": "#f5f8f6",
+                    "background-dark": "#020202",
+                },
+                fontFamily: {
+                    "display": ["Space Grotesk", "sans-serif"]
+                },
+                borderRadius: {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+                },
+            },
+        },
+    }
+</script>
+<style>
+    body {
+        font-family: 'Space Grotesk', sans-serif;
+        background-image: 
+            linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+        background-size: 30px 30px;
+        animation: gridShift 20s linear infinite;
+    }
+    @keyframes gridShift {
+        0% { background-position: 0 0; }
+        100% { background-position: 30px 30px; }
+    }
+    .glow-text {
+        text-shadow: 0 0 10px rgba(0, 255, 65, 0.5), 0 0 20px rgba(0, 255, 65, 0.3);
+        animation: textGlow 3s ease-in-out infinite;
+    }
+    @keyframes textGlow {
+        0%, 100% { text-shadow: 0 0 10px rgba(0, 255, 65, 0.5), 0 0 20px rgba(0, 255, 65, 0.3); }
+        50% { text-shadow: 0 0 20px rgba(0, 255, 65, 0.8), 0 0 30px rgba(0, 255, 65, 0.5), 0 0 40px rgba(0, 255, 65, 0.3); }
+    }
+    .scanline {
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.5), transparent);
+        position: fixed;
+        z-index: 50;
+        pointer-events: none;
+        animation: scan 4s linear infinite;
+        box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+    }
+    @keyframes scan {
+        0% { top: 0%; opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { top: 100%; opacity: 0; }
+    }
+    .terminal-border {
+        border: 1px solid rgba(0, 255, 65, 0.2);
+        transition: all 0.3s ease;
+    }
+    .terminal-border:hover {
+        border-color: #00ff41;
+        box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        transform: translateY(-5px);
+    }
+    .pulse-glow {
+        animation: pulseGlow 2s ease-in-out infinite;
+    }
+    @keyframes pulseGlow {
+        0%, 100% { box-shadow: 0 0 5px rgba(0, 255, 65, 0.2); }
+        50% { box-shadow: 0 0 25px rgba(0, 255, 65, 0.5); }
+    }
+    .matrix-text {
+        font-family: 'Courier New', monospace;
+        color: rgba(0, 255, 65, 0.2);
+        animation: matrixFlicker 0.1s infinite;
+    }
+    @keyframes matrixFlicker {
+        0%, 100% { opacity: 0.1; }
+        50% { opacity: 0.15; }
+    }
+    .floating {
+        animation: floating 3s ease-in-out infinite;
+    }
+    @keyframes floating {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+    .slide-in {
+        animation: slideIn 0.8s ease-out;
+    }
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in {
+        animation: fadeIn 1s ease-in;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    .scale-up {
+        animation: scaleUp 0.5s ease-out;
+    }
+    @keyframes scaleUp {
+        from { transform: scale(0.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+    .typewriter {
+        overflow: hidden;
+        border-right: .15em solid #00ff41;
+        white-space: nowrap;
+        animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+    }
+    @keyframes typing {
+        from { width: 0 }
+        to { width: 100% }
+    }
+    @keyframes blink-caret {
+        from, to { border-color: transparent }
+        50% { border-color: #00ff41; }
+    }
+</style>
+</head>
+<body class="bg-background-dark text-white selection:bg-primary selection:text-background-dark min-h-screen">
+
+<div class="scanline"></div>
+
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+
+<!-- Top Navigation Bar -->
+<div class="flex justify-center border-b border-primary/20 bg-background-dark/90 backdrop-blur-md sticky top-0 z-50">
+    <div class="layout-content-container flex flex-col w-full max-w-[1200px] flex-1">
+        <header class="flex items-center justify-between whitespace-nowrap px-6 py-4 lg:px-10">
+            <div class="flex items-center gap-3">
+                <div class="size-6 text-primary">
+                    <span class="material-symbols-outlined text-3xl">terminal</span>
+                </div>
+                <h2 class="text-primary text-xl font-bold leading-tight tracking-wider glow-text">EK DEV SEC_OPS</h2>
+            </div>
+            <div class="flex flex-1 justify-end gap-8">
+                <div class="hidden md:flex items-center gap-9">
+                    <a class="text-white/70 hover:text-primary text-sm font-medium transition-colors tracking-widest uppercase" href="#modules" data-en="Modules" data-tr="Modüller">Modules</a>
+                    <a class="text-white/70 hover:text-primary text-sm font-medium transition-colors tracking-widest uppercase" href="#toolbox" data-en="Toolbox" data-tr="Toolbox">Toolbox</a>
+                    <a class="text-white/70 hover:text-primary text-sm font-medium transition-colors tracking-widest uppercase" href="#download" data-en="Download" data-tr="İndir">Download</a>
+                </div>
+                <div class="flex gap-4 items-center">
+                    <div class="flex items-center gap-2 px-3 py-1 border border-primary/30 rounded text-[10px] text-primary font-mono tracking-tighter floating">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                        </span>
+                        SYSTEM_ONLINE
+                    </div>
+                    <button id="langToggle" class="flex min-w-[70px] cursor-pointer items-center justify-center overflow-hidden rounded border border-primary text-primary hover:bg-primary hover:text-background-dark transition-all duration-300 h-9 px-3 text-xs font-bold tracking-widest scale-up">
+                        <span class="truncate">EN</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+    </div>
+</div>
+
+<!-- Hero Section -->
+<div class="flex flex-1 justify-center py-10 lg:py-20">
+    <div class="layout-content-container flex flex-col max-w-[960px] flex-1 px-4">
+        <div class="@container">
+            <div class="flex min-h-[500px] flex-col gap-10 items-center justify-center text-center relative rounded-xl overflow-hidden border border-primary/10 bg-gradient-to-b from-primary/5 to-transparent p-8 md:p-16">
+                
+                <!-- Background Matrix Code -->
+                <div class="absolute inset-0 opacity-10 pointer-events-none overflow-hidden font-mono text-[8px] leading-tight text-primary text-left p-4 select-none uppercase matrix-text">
+                    [INIT] EK_DEV_SEC_OPS_v2.2 BOOTING...<br/>
+                    HONEYPOT_ENGINE... LOADED<br/>
+                    DEEP_TRACE_MODULE... ACTIVE<br/>
+                    GHOST_PROTOCOL... ENABLED<br/>
+                    NET_SENTRY_DAEMON... RUNNING<br/>
+                    FILE_SHREDDER... STANDBY<br/>
+                    HASH_VALIDATOR... READY<br/>
+                    PORT_SCANNER... INITIALIZED<br/>
+                    WIFI_PROBE... ONLINE<br/>
+                    DNS_LEAK_CHECK... CONFIGURED<br/>
+                    [SUCCESS] ALL_SYSTEMS_OPERATIONAL<br/>
+                    01001111 01010000 01000101 01010010 01000001 01010100 01001001 01001111 01001110 01000001 01001100<br/>
+                    BLACKLIST_DB... 1,247,893 ENTRIES<br/>
+                    THREAT_INTEL... UPDATED<br/>
+                    [CRITICAL] MONITORING_65535_PORTS<br/>
+                    ENCRYPTION_LEVEL... AES-256<br/>
+                    SECURE_CHANNEL... ESTABLISHED
+                </div>
+
+                <div class="flex flex-col gap-6 z-10 slide-in">
+                    <h1 class="text-primary text-5xl md:text-7xl font-black leading-tight tracking-[-0.05em] uppercase glow-text italic">
+                        EK DEV SEC_OPS
+                    </h1>
+                    <div class="flex items-center justify-center gap-3 mb-4 scale-up">
+                        <div class="h-px bg-primary/30 w-20"></div>
+                        <span class="text-primary font-mono text-sm tracking-[0.3em] uppercase px-4 py-1 border border-primary/30 rounded pulse-glow">
+                            v2.2 ELITE EDITION
+                        </span>
+                        <div class="h-px bg-primary/30 w-20"></div>
+                    </div>
+                    <div class="space-y-4 fade-in">
+                        <p class="text-white text-xl md:text-2xl font-light leading-normal max-w-2xl mx-auto tracking-wide typewriter" data-en="Advanced Cybersecurity Operations Center" data-tr="Gelişmiş Siber Güvenlik Operasyon Merkezi">
+                            Advanced Cybersecurity Operations Center
+                        </p>
+                        <p class="text-white/70 text-base leading-relaxed max-w-xl mx-auto" data-en="Professional-grade security toolkit for system monitoring, network analysis, threat detection, and active defense against cyber attacks." data-tr="Sistem izleme, ağ analizi, tehdit tespiti ve siber saldırılara karşı aktif savunma için profesyonel seviye güvenlik araç seti.">
+                            Professional-grade security toolkit for system monitoring, network analysis, threat detection, and active defense against cyber attacks.
+                        </p>
+                        <p class="text-primary text-sm font-mono tracking-wider mt-6" data-en="[ ACTIVE DEFENSE • DEEP TRACE • GHOST PROTOCOL • NET SENTRY ]" data-tr="[ AKTİF SAVUNMA • DERİN İZLEME • HAYALET PROTOKOL • AĞ BEKÇİSİ ]">
+                            [ ACTIVE DEFENSE • DEEP TRACE • GHOST PROTOCOL • NET SENTRY ]
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 z-10 scale-up">
+                    <button id="downloadBtn" class="flex min-w-[200px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-14 px-8 bg-primary text-background-dark text-base font-bold uppercase tracking-widest hover:brightness-110 hover:scale-105 shadow-[0_0_20px_rgba(0,255,65,0.4)] hover:shadow-[0_0_40px_rgba(0,255,65,0.6)] transition-all duration-300">
+                        <span class="material-symbols-outlined mr-2 floating">download</span>
+                        <span class="truncate" data-en="Download v2.2" data-tr="İndir v2.2">Download v2.2</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Bar -->
+<div class="flex justify-center py-5">
+    <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 px-4">
+            <div class="flex flex-col gap-1 rounded-lg p-6 terminal-border bg-background-dark/50 slide-in">
+                <p class="text-white/60 text-xs font-medium uppercase tracking-[0.2em]" data-en="Version" data-tr="Sürüm">Version</p>
+                <div class="flex items-baseline gap-2">
+                    <p class="text-primary text-3xl font-bold leading-tight font-mono tracking-tighter">2.2</p>
+                    <p class="text-primary text-xs font-mono">Elite</p>
+                </div>
+            </div>
+            <div class="flex flex-col gap-1 rounded-lg p-6 terminal-border bg-background-dark/50 slide-in" style="animation-delay: 0.1s;">
+                <p class="text-white/60 text-xs font-medium uppercase tracking-[0.2em]" data-en="Platform" data-tr="Platform">Platform</p>
+                <div class="flex items-baseline gap-2">
+                    <p class="text-primary text-2xl font-bold leading-tight font-mono tracking-tighter">Multi</p>
+                    <p class="text-primary text-xs font-mono">Win/Linux</p>
+                </div>
+            </div>
+            <div class="flex flex-col gap-1 rounded-lg p-6 terminal-border bg-background-dark/50 slide-in" style="animation-delay: 0.2s;">
+                <p class="text-white/60 text-xs font-medium uppercase tracking-[0.2em]" data-en="Modules" data-tr="Modüller">Modules</p>
+                <div class="flex items-baseline gap-2">
+                    <p class="text-primary text-3xl font-bold leading-tight font-mono tracking-tighter">4</p>
+                    <p class="text-primary text-xs font-mono">Core</p>
+                </div>
+            </div>
+            <div class="flex flex-col gap-1 rounded-lg p-6 terminal-border bg-background-dark/50 slide-in" style="animation-delay: 0.3s;">
+                <p class="text-white/60 text-xs font-medium uppercase tracking-[0.2em]" data-en="License" data-tr="Lisans">License</p>
+                <div class="flex items-baseline gap-2">
+                    <p class="text-primary text-2xl font-bold leading-tight font-mono tracking-tighter">Free</p>
+                    <p class="text-primary text-xs font-mono">Open</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Core Modules Section Header -->
+<div id="modules" class="flex justify-center py-10">
+    <div class="layout-content-container flex flex-col max-w-[960px] flex-1 px-4">
+        <div class="flex items-center gap-4">
+            <div class="h-px bg-primary/30 flex-1"></div>
+            <h4 class="text-primary text-xs font-bold leading-normal tracking-[0.4em] uppercase glow-text px-4">Core Modules</h4>
+            <div class="h-px bg-primary/30 flex-1"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Core Modules Grid -->
+<div class="flex justify-center pb-10">
+    <div class="layout-content-container flex flex-col max-w-[960px] flex-1 px-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            
+            <!-- Active Defense -->
+            <div class="flex flex-col gap-4 rounded-xl border border-primary/20 bg-background-dark p-8 transition-all hover:bg-primary/5 group/card relative overflow-hidden slide-in">
+                <div class="absolute top-0 right-0 p-4 opacity-10 text-primary group-hover/card:opacity-20 transition-opacity">
+                    <span class="material-symbols-outlined text-6xl">security</span>
+                </div>
+                <div class="text-primary bg-primary/10 w-12 h-12 flex items-center justify-center rounded-lg mb-2 group-hover/card:scale-110 transition-transform">
+                    <span class="material-symbols-outlined text-2xl">pest_control</span>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <h2 class="text-white text-xl font-bold leading-tight uppercase tracking-wider group-hover/card:text-primary transition-colors italic">🔴 Active Defense</h2>
+                    <p class="text-white/60 text-sm font-normal leading-relaxed" data-en="Honeypot technology to trap attackers. Opens fake service on port 9999, automatically blocks IPs sending 10+ requests per second." data-tr="Bal Küpü (Honeypot) teknolojisi ile saldırganları tuzağa düşürür. Port 9999'da sahte servis açar, saniyede 10+ istek gönderen IP'leri otomatik engeller.">
+                        Honeypot technology to trap attackers. Opens fake service on port 9999, automatically blocks IPs sending 10+ requests per second.
+                    </p>
+                </div>
+                <div class="mt-4 flex flex-col gap-1 text-[10px] font-mono text-primary/70">
+                    <div>→ Honeypot Deployment</div>
+                    <div>→ Auto-Blacklist System</div>
+                    <div>→ Real-time Traffic Log</div>
+                </div>
+            </div>
+
+            <!-- Deep Trace -->
+            <div class="flex flex-col gap-4 rounded-xl border border-primary/20 bg-background-dark p-8 transition-all hover:bg-primary/5 group/card relative overflow-hidden slide-in" style="animation-delay: 0.1s;">
+                <div class="absolute top-0 right-0 p-4 opacity-10 text-primary group-hover/card:opacity-20 transition-opacity">
+                    <span class="material-symbols-outlined text-6xl">hub</span>
+                </div>
+                <div class="text-primary bg-primary/10 w-12 h-12 flex items-center justify-center rounded-lg mb-2 group-hover/card:scale-110 transition-transform">
+                    <span class="material-symbols-outlined text-2xl">account_tree</span>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <h2 class="text-white text-xl font-bold leading-tight uppercase tracking-wider group-hover/card:text-primary transition-colors italic">🔗 Deep Trace</h2>
+                    <p class="text-white/60 text-sm font-normal leading-relaxed" data-en="Tracks redirect chains to the end. Detects hidden IP loggers like Grabify and IPLogger. Catches redirect loops." data-tr="Yönlendirme zincirini sonuna kadar takip eder. Grabify, IPLogger gibi gizli IP logger'ları tespit eder. Redirect loop'ları yakalar.">
+                        Tracks redirect chains to the end. Detects hidden IP loggers like Grabify and IPLogger. Catches redirect loops.
+                    </p>
+                </div>
+                <div class="mt-4 flex flex-col gap-1 text-[10px] font-mono text-primary/70">
+                    <div>→ Full Redirect Chain Analysis</div>
+                    <div>→ IP Logger Detection</div>
+                    <div>→ HTTP Status Monitoring</div>
+                </div>
+            </div>
+
+            <!-- Ghost Protocol -->
+            <div class="flex flex-col gap-4 rounded-xl border border-primary/20 bg-background-dark p-8 transition-all hover:bg-primary/5 group/card relative overflow-hidden slide-in" style="animation-delay: 0.2s;">
+                <div class="absolute top-0 right-0 p-4 opacity-10 text-primary group-hover/card:opacity-20 transition-opacity">
+                    <span class="material-symbols-outlined text-6xl">visibility_off</span>
+                </div>
+                <div class="text-primary bg-primary/10 w-12 h-12 flex items-center justify-center rounded-lg mb-2 group-hover/card:scale-110 transition-transform">
+                    <span class="material-symbols-outlined text-2xl">masks</span>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <h2 class="text-white text-xl font-bold leading-tight uppercase tracking-wider group-hover/card:text-primary transition-colors italic">👻 Ghost Protocol</h2>
+                    <p class="text-white/60 text-sm font-normal leading-relaxed" data-en="External IP, location, ISP analysis. VPN/Proxy detection. Gives critical warning if your real IP is exposed and reports privacy status." data-tr="Dış IP, konum, ISP analizi. VPN/Proxy tespiti yapar. Gerçek IP adresiniz açıkta ise kritik uyarı verir ve gizlilik durumunuzu raporlar.">
+                        External IP, location, ISP analysis. VPN/Proxy detection. Gives critical warning if your real IP is exposed and reports privacy status.
+                    </p>
+                </div>
+                <div class="mt-4 flex flex-col gap-1 text-[10px] font-mono text-primary/70">
+                    <div>→ External IP Analysis</div>
+                    <div>→ VPN Detection</div>
+                    <div>→ Privacy Risk Assessment</div>
+                </div>
+            </div>
+
+            <!-- Net Sentry -->
+            <div class="flex flex-col gap-4 rounded-xl border border-primary/20 bg-background-dark p-8 transition-all hover:bg-primary/5 group/card relative overflow-hidden slide-in" style="animation-delay: 0.3s;">
+                <div class="absolute top-0 right-0 p-4 opacity-10 text-primary group-hover/card:opacity-20 transition-opacity">
+                    <span class="material-symbols-outlined text-6xl">monitoring</span>
+                </div>
+                <div class="text-primary bg-primary/10 w-12 h-12 flex items-center justify-center rounded-lg mb-2 group-hover/card:scale-110 transition-transform">
+                    <span class="material-symbols-outlined text-2xl">network_check</span>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <h2 class="text-white text-xl font-bold leading-tight uppercase tracking-wider group-hover/card:text-primary transition-colors italic">👁️ Net Sentry</h2>
+                    <p class="text-white/60 text-sm font-normal leading-relaxed" data-en="Scans all active (ESTABLISHED) external connections. Shows which IPs and ports are connected. Real-time monitoring for Trojan detection." data-tr="Tüm aktif (ESTABLISHED) dış bağlantıları tarar. Hangi IP ve portların bağlı olduğunu gösterir. Trojan tespiti için real-time monitoring.">
+                        Scans all active (ESTABLISHED) external connections. Shows which IPs and ports are connected. Real-time monitoring for Trojan detection.
+                    </p>
+                </div>
+                <div class="mt-4 flex flex-col gap-1 text-[10px] font-mono text-primary/70">
+                    <div>→ Active Connection Scanner</div>
+                    <div>→ Port Monitoring</div>
+                    <div>→ Trojan Detection</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Toolbox Section Header -->
+<div id="toolbox" class="flex justify-center py-10">
+    <div class="layout-content-container flex flex-col max-w-[960px] flex-1 px-4">
+        <div class="flex items-center gap-4">
+            <div class="h-px bg-primary/30 flex-1"></div>
+            <h4 class="text-primary text-xs font-bold leading-normal tracking-[0.4em] uppercase glow-text px-4">ToolBox Suite</h4>
+            <div class="h-px bg-primary/30 flex-1"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Toolbox Grid -->
+<div class="flex justify-center pb-10">
+    <div class="layout-content-container flex flex-col max-w-[960px] flex-1 px-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            
+            <!-- File Shredder -->
+            <div class="flex flex-col gap-3 rounded-lg border border-primary/20 bg-background-dark/50 p-6 hover:bg-primary/5 hover:scale-105 transition-all slide-in">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-2xl floating">delete_forever</span>
+                    <h3 class="text-white text-sm font-bold uppercase tracking-wider">File Shredder</h3>
+                </div>
+                <p class="text-white/50 text-xs leading-relaxed" data-en="Securely deletes sensitive files to DoD standards, overwrites with random data making them unrecoverable." data-tr="Hassas dosyaları DoD standartlarında güvenli siler, üzerine rastgele veri yazarak geri getirilemez hale getirir.">
+                    Securely deletes sensitive files to DoD standards, overwrites with random data making them unrecoverable.
+                </p>
+            </div>
+
+            <!-- Hash Checker -->
+            <div class="flex flex-col gap-3 rounded-lg border border-primary/20 bg-background-dark/50 p-6 hover:bg-primary/5 hover:scale-105 transition-all slide-in" style="animation-delay: 0.1s;">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-2xl floating">verified</span>
+                    <h3 class="text-white text-sm font-bold uppercase tracking-wider">Hash Checker</h3>
+                </div>
+                <p class="text-white/50 text-xs leading-relaxed" data-en="Verifies authenticity of downloaded files using SHA-256 algorithm. Provides integrity control." data-tr="İndirilen dosyaların orijinalliğini SHA-256 algoritması ile doğrular. Integrity kontrolü sağlar.">
+                    Verifies authenticity of downloaded files using SHA-256 algorithm. Provides integrity control.
+                </p>
+            </div>
+
+            <!-- Port Patrol -->
+            <div class="flex flex-col gap-3 rounded-lg border border-primary/20 bg-background-dark/50 p-6 hover:bg-primary/5 hover:scale-105 transition-all slide-in" style="animation-delay: 0.2s;">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-2xl floating">search</span>
+                    <h3 class="text-white text-sm font-bold uppercase tracking-wider">Port Patrol</h3>
+                </div>
+                <p class="text-white/50 text-xs leading-relaxed" data-en="Scans critical system ports (21, 22, 80, 443, 3306, 8080, 9999) and reports open ports." data-tr="Kritik sistem portlarını (21, 22, 80, 443, 3306, 8080, 9999) tarar ve açık portları raporlar.">
+                    Scans critical system ports (21, 22, 80, 443, 3306, 8080, 9999) and reports open ports.
+                </p>
+            </div>
+
+            <!-- WiFi Scanner -->
+            <div class="flex flex-col gap-3 rounded-lg border border-primary/20 bg-background-dark/50 p-6 hover:bg-primary/5 hover:scale-105 transition-all slide-in" style="animation-delay: 0.3s;">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-2xl floating">wifi</span>
+                    <h3 class="text-white text-sm font-bold uppercase tracking-wider">WiFi Scanner</h3>
+                </div>
+                <p class="text-white/50 text-xs leading-relaxed" data-en="Scans surrounding wireless networks, lists SSID and signal strength information." data-tr="Çevredeki kablosuz ağları tarar, SSID ve sinyal gücü bilgilerini listeler.">
+                    Scans surrounding wireless networks, lists SSID and signal strength information.
+                </p>
+            </div>
+
+            <!-- DNS & Ping Test -->
+            <div class="flex flex-col gap-3 rounded-lg border border-primary/20 bg-background-dark/50 p-6 hover:bg-primary/5 hover:scale-105 transition-all slide-in" style="animation-delay: 0.4s;">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-2xl floating">dns</span>
+                    <h3 class="text-white text-sm font-bold uppercase tracking-wider">DNS & Ping Test</h3>
+                </div>
+                <p class="text-white/50 text-xs leading-relaxed" data-en="Performs DNS leak control, pings Google servers to measure network latency." data-tr="DNS sızıntı kontrolü yapar, Google sunucularına ping atarak network latency ölçer.">
+                    Performs DNS leak control, pings Google servers to measure network latency.
+                </p>
+            </div>
+
+            <!-- Auto Update -->
+            <div class="flex flex-col gap-3 rounded-lg border border-primary/20 bg-background-dark/50 p-6 hover:bg-primary/5 hover:scale-105 transition-all slide-in" style="animation-delay: 0.5s;">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-2xl floating">system_update</span>
+                    <h3 class="text-white text-sm font-bold uppercase tracking-wider">Auto Update</h3>
+                </div>
+                <p class="text-white/50 text-xs leading-relaxed" data-en="Performs automatic version control via GitHub, sends notifications for updates." data-tr="GitHub üzerinden otomatik versiyon kontrolü yapar, güncellemeler için bildirim gönderir.">
+                    Performs automatic version control via GitHub, sends notifications for updates.
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Technical Specs Section -->
+<div class="flex justify-center py-10">
+    <div class="layout-content-container flex flex-col max-w-[960px] flex-1 px-4">
+        <div class="flex items-center gap-4 mb-8">
+            <div class="h-px bg-primary/30 flex-1"></div>
+            <h4 class="text-primary text-xs font-bold leading-normal tracking-[0.4em] uppercase glow-text px-4">Technical Specifications</h4>
+            <div class="h-px bg-primary/30 flex-1"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="rounded-xl border border-primary/20 bg-gradient-to-br from-background-dark to-primary/5 p-8">
+                <h3 class="text-primary text-lg font-bold mb-6 uppercase tracking-wider flex items-center gap-2">
+                    <span class="material-symbols-outlined">palette</span>
+                    Design & Interface
+                </h3>
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between items-center border-b border-primary/10 pb-2">
+                        <span class="text-white/60">Theme</span>
+                        <span class="text-primary font-mono">Vanta Black + Matrix Green</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-primary/10 pb-2">
+                        <span class="text-white/60">Style</span>
+                        <span class="text-primary font-mono">Ultra-Minimal Hacker</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-primary/10 pb-2">
+                        <span class="text-white/60">Language</span>
+                        <span class="text-primary font-mono">TR / EN Switchable</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rounded-xl border border-primary/20 bg-gradient-to-br from-background-dark to-primary/5 p-8">
+                <h3 class="text-primary text-lg font-bold mb-6 uppercase tracking-wider flex items-center gap-2">
+                    <span class="material-symbols-outlined">code</span>
+                    Core Technology
+                </h3>
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between items-center border-b border-primary/10 pb-2">
+                        <span class="text-white/60">Language</span>
+                        <span class="text-primary font-mono">Python 3.x</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-primary/10 pb-2">
+                        <span class="text-white/60">Platform</span>
+                        <span class="text-primary font-mono">Windows 10/11 & Linux</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-primary/10 pb-2">
+                        <span class="text-white/60">Architecture</span>
+                        <span class="text-primary font-mono">Cross-Platform</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Download Section -->
+<div id="download" class="flex justify-center py-16">
+    <div class="layout-content-container flex flex-col max-w-[960px] flex-1 px-4">
+        <div class="rounded-xl border-2 border-primary/30 bg-gradient-to-br from-primary/10 to-transparent p-12 text-center pulse-glow scale-up">
+            <div class="flex items-center justify-center gap-3 mb-6">
+                <div class="h-px bg-primary/30 w-20"></div>
+                <span class="material-symbols-outlined text-primary text-4xl floating">download</span>
+                <div class="h-px bg-primary/30 w-20"></div>
+            </div>
+            
+            <h2 class="text-primary text-4xl font-bold mb-4 uppercase tracking-wider glow-text" data-en="Download Now" data-tr="Şimdi İndir">Download Now</h2>
+            <p class="text-white/60 text-lg mb-8 max-w-2xl mx-auto" data-en="EK DEV SEC_OPS v2.2 Elite Edition - Your professional cybersecurity operations center is ready!" data-tr="EK DEV SEC_OPS v2.2 Elite Edition - Profesyonel siber güvenlik operasyon merkeziniz hazır!">
+                EK DEV SEC_OPS v2.2 Elite Edition - Your professional cybersecurity operations center is ready!
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+                <button id="downloadMainBtn" class="flex items-center justify-center gap-3 px-10 py-4 bg-primary text-background-dark text-lg font-bold uppercase tracking-widest rounded-lg hover:brightness-110 hover:scale-110 shadow-[0_0_30px_rgba(0,255,65,0.5)] hover:shadow-[0_0_50px_rgba(0,255,65,0.8)] transition-all duration-300">
+                    <span class="material-symbols-outlined text-2xl floating">file_download</span>
+                    <span data-en="Download v2.2" data-tr="İndir v2.2">Download v2.2</span>
+                </button>
+                <a href="https://github.com/ekorick/ekdev" target="_blank" class="flex items-center justify-center gap-3 px-10 py-4 border-2 border-primary text-primary text-lg font-bold uppercase tracking-widest rounded-lg hover:bg-primary/10 hover:scale-105 transition-all duration-300">
+                    <span class="material-symbols-outlined text-2xl">code</span>
+                    <span>GitHub</span>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div class="flex items-center justify-center gap-2 text-primary">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <span data-en="Completely Free" data-tr="Tamamen Ücretsiz">Completely Free</span>
+                </div>
+                <div class="flex items-center justify-center gap-2 text-primary">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <span data-en="Open Source" data-tr="Açık Kaynak">Open Source</span>
+                </div>
+                <div class="flex items-center justify-center gap-2 text-primary">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <span data-en="Regular Updates" data-tr="Düzenli Güncellemeler">Regular Updates</span>
+                </div>
+            </div>
+
+            <div class="mt-8 pt-8 border-t border-primary/20">
+                <p class="text-white/40 text-xs font-mono" data-en="System Requirements: Windows 10/11 or Linux | Python 3.x | 256MB RAM | 100MB Disk" data-tr="Sistem Gereksinimleri: Windows 10/11 veya Linux | Python 3.x | 256MB RAM | 100MB Disk">
+                    System Requirements: Windows 10/11 or Linux | Python 3.x | 256MB RAM | 100MB Disk
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="flex justify-center border-t border-primary/10 bg-background-dark py-10">
+    <div class="layout-content-container flex flex-col w-full max-w-[1200px] px-6 lg:px-10">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex flex-col items-center md:items-start gap-2">
+                <div class="text-primary text-sm font-bold tracking-widest uppercase flex items-center gap-2">
+                    <span class="material-symbols-outlined floating">terminal</span>
+                    EK DEV SEC_OPS v2.2
+                </div>
+                <p class="text-white/40 text-[10px] font-mono uppercase tracking-tighter">
+                    © 2025 EK DEV // ELITE CYBERSECURITY OPERATIONS // ALL RIGHTS RESERVED
+                </p>
+            </div>
+            
+            <div class="flex gap-6">
+                <a class="text-white/40 hover:text-primary hover:scale-110 transition-all duration-300" href="https://github.com/ekorick/ekdev" target="_blank" title="GitHub">
+                    <span class="material-symbols-outlined">code</span>
+                </a>
+                <a class="text-white/40 hover:text-primary hover:scale-110 transition-all duration-300" href="https://github.com/ekorick/ekdev/releases/tag/App" target="_blank" title="Releases">
+                    <span class="material-symbols-outlined">cloud_download</span>
+                </a>
+            </div>
+            
+            <div class="flex items-center gap-2 border border-primary/20 rounded px-4 py-2 bg-primary/5 pulse-glow">
+                <span class="material-symbols-outlined text-primary text-sm floating">verified_user</span>
+                <span class="text-primary text-[10px] font-mono uppercase tracking-widest">SECURE_CONNECTION</span>
+            </div>
+        </div>
+        
+        <div class="mt-8 pt-6 border-t border-primary/10 text-center">
+            <p class="text-white/30 text-xs font-mono">
+                Developed with <span class="text-primary">❤</span> by EK DEV | Python Powered | Open Source Initiative
+            </p>
+        </div>
+    </div>
+</footer>
+
+</div>
+</div>
+
+<script>
+    // Language management
+    let currentLang = 'en'; // Default language is English
+
+    const langToggle = document.getElementById('langToggle');
+    
+    // Language toggle function
+    function toggleLanguage() {
+        currentLang = currentLang === 'en' ? 'tr' : 'en';
+        langToggle.querySelector('span').textContent = currentLang.toUpperCase();
+        
+        // Update all elements with data-en and data-tr attributes
+        document.querySelectorAll('[data-en][data-tr]').forEach(element => {
+            const text = currentLang === 'en' ? element.getAttribute('data-en') : element.getAttribute('data-tr');
+            element.textContent = text;
+        });
+
+        // Save language preference
+        localStorage.setItem('preferredLang', currentLang);
+        
+        // Add visual feedback
+        langToggle.style.transform = 'scale(1.1)';
+        setTimeout(() => {
+            langToggle.style.transform = 'scale(1)';
+        }, 200);
+    }
+
+    // Event listener for language toggle
+    langToggle.addEventListener('click', toggleLanguage);
+
+    // Load saved language preference on page load
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedLang = localStorage.getItem('preferredLang');
+        if (savedLang && savedLang !== currentLang) {
+            toggleLanguage();
+        }
+    });
+
+    // Download button functionality
+    document.getElementById('downloadBtn').addEventListener('click', function() {
+        window.open('https://github.com/ekorick/ekdev/releases/tag/App', '_blank');
+    });
+
+    document.getElementById('downloadMainBtn').addEventListener('click', function() {
+        window.open('https://github.com/ekorick/ekdev/releases/tag/App', '_blank');
+    });
+
+    // Smooth scroll for navigation
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+
+    // Console easter egg
+    console.log('%c🔐 EK DEV SEC_OPS v2.2 - Elite Edition', 'color: #00ff41; font-size: 18px; font-weight: bold; font-family: monospace;');
+    console.log('%c[SYSTEM] All security modules initialized successfully', 'color: #00ff41; font-size: 12px; font-family: monospace;');
+    console.log('%c[ACTIVE] Honeypot Engine | Deep Trace | Ghost Protocol | Net Sentry', 'color: #00ffff; font-size: 11px; font-family: monospace;');
+    console.log('%c[WARNING] Unauthorized access detected - Connection logged', 'color: #ff0000; font-size: 11px; font-family: monospace;');
+    console.log('%c[STATUS] System online and monitoring...', 'color: #00ff41; font-size: 11px; font-family: monospace;');
+    console.log('%c[REPOSITORY] https://github.com/ekorick/ekdev', 'color: #00ff41; font-size: 11px; font-family: monospace;');
+</script>
+
+</body>
+</html>
